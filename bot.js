@@ -160,7 +160,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
 				fs.readFile('List.json', 'utf-8', function(err, data) {
                     if (err) throw err
                     jsonData = JSON.parse(data)
-					var random = Math.floor(Math.random(0, jsonData.sharkfacts.length));
+					var random = Math.floor(Math.random(0, jsonData.sharkfacts.length-1));
 
                     bot.sendMessage({
                         to: channelID,
