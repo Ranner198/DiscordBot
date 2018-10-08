@@ -1,1 +1,64 @@
-{"tasks":[{"taskNum":1,"taskDescription":" Work on Shark AI and getting the Spear model implemented 😉"},{"taskNum":3,"taskDescription":" Import speargun models"},{"taskNum":3,"taskDescription":" Condition if shark goes out of play zone come back in."},{"taskNum":4,"taskDescription":" sharks falling in pits, add conditional statement to prevent this."}]}
+{
+	"tasks": [{
+			"taskNum": 1,
+			"taskDescription": " Work on Shark AI and getting the Spear model implemented \ud83d\ude09"
+		},
+		{
+			"taskNum": 3,
+			"taskDescription": " Import speargun models"
+		},
+		{
+			"taskNum": 3,
+			"taskDescription": " Condition if shark goes out of play zone come back in."
+		},
+		{
+			"taskNum": 4,
+			"taskDescription": " sharks falling in pits, add conditional statement to prevent this."
+		}
+	],
+	"sharkfacts": [{
+			"fact": 1,
+			"text": "Even though sharks don't have bones, they still can fossilize. As most sharks age, they deposit calcium salts in their skeletal cartilage to strengthen it. The dried jaws of a shark appear and feel heavy and solid; much like bone. These same minerals allow most shark skeletal systems to fossilize quite nicely. The teeth have enamel so they show up in the fossil record too."
+		},
+		{
+			"fact": 2,
+			"text": "Most sharks can see well in dark lighted areas, have fantastic night vision, and can see colors. The back of sharks’ eyeballs have a reflective layer of tissue called a tapetum. This helps sharks see extremely well with little light."
+		},
+		{
+			"fact": 3,
+			"text": "Sharks have small black spots near the nose, eyes, and mouth. These spots are the ampullae of Lorenzini – special electroreceptor organs that allow the shark to sense electromagnetic fields and temperature shifts in the ocean."
+		},
+		{
+			"fact": 4,
+			"text": "Shark skin feels exactly like sandpaper because it is made up of tiny teeth-like structures called placoid scales, also known as dermal denticles. These scales point towards the tail and help reduce friction from surrounding water when the shark swims."
+		},
+		{
+			"facts": 5,
+			"text": "When you flip a shark upside down they go into a trance like state called tonic immobility. This is the reason why you often see sawfish flipped over when our scientists are working on them in the water."
+		},
+		{
+			"facts": 6,
+			"text": "Based on fossil scales found in Australia and the United States, scientists hypothesize sharks first appeared in the ocean around 455 million years ago."
+		},
+		{
+			"facts": 7,
+			"text": "Vertebrae contain concentric pairs of opaque and translucent bands. Band pairs are counted like rings on a tree and then scientists assign an age to the shark based on the count. Thus, if the vertebrae has 10 band pairs, it is assumed to be 10 years old. Recent studies, however, have shown that this assumption is not always correct. Researchers must therefore study each species and size class to determine how often the band pairs are deposited because the deposition rate may change over time. Determining the actual rate that the bands are deposited is called \"validation\"."
+		},
+		{
+			"facts": 8,
+			"text": "The blue shark displays a brilliant blue color on the upper portion of its body and is normally snowy white beneath. The mako and porbeagle sharks also exhibit a blue coloration, but it is not nearly as brilliant as that of a blue shark. In life, most sharks are brown, olive, or grayish."
+		},
+		{
+			"facts": 9,
+			"text": "Whale sharks are the biggest fish in the ocean. They can grow to 12.2 meters and weigh as much as 40 tons by some estimates! Basking sharks are the world's second largest fish, growing as long as 32 feet and weighing more than five tons."
+		},
+		{
+			"facts": 10,
+			"text": "A shark's spiracle is located just behind the eyes which supplies oxygen directly to the shark's eyes and brain. Bottom dwelling sharks, like angel sharks and nurse sharks, use this extra respiratory organ to breathe while at rest on the seafloor. It is also used for respiration when the shark's mouth is used for eating."
+		},
+		{
+			"facts": 11,
+			"text": "Mako sharks have very pointed teeth, while white sharks have triangular, serrated teeth. Each leave a unique, tell-tale mark on their prey. A sandbar shark will have around 35,000 teeth over the course of its lifetime! "
+		}
+	]
+}
