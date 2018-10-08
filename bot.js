@@ -31,7 +31,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
             case 'help':
                 bot.sendMessage({
                     to: channelID,
-                    message: "Commands: !babyshark, !ping, !push <push alert>, !add <taskDescription>, !tasks, !delete <keyNum>"
+                    message: "Commands: !babyshark, !ping, !push <push alert>, !add <taskDescription>, !tasks, !delete <keyNum>, !alert <message to alert>, !pushed <what branch you pushed in>"
                 });
             break
             //baby shark meme 
@@ -55,7 +55,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                 });
                 break;
                 //Push Alert
-            case 'push':
+            case 'pull':
                 bot.sendMessage({
                     to: channelID,
                     message: 'A new Update has been pushed!, make sure to grab the latest version'
@@ -142,6 +142,30 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                         message.substring(8, message.length) + ' from the task list.'
                 });
                 break;
+			case 'alert':
+				bot.sendMessage({
+                    to: channelID,
+                    message: '@everyone ' + '@' + user + ' wanted to alert the channel: ' +  message.substring(4, message.length)
+                });
+			break;
+			case 'pushed':
+								bot.sendMessage({
+                    to: channelID,
+                    message: '@everyone ' + '@' + user + ' made a push in: ' +  message.substring(4, message.length)
+                });
+			break;
+			case 'sharkfact':			
+                fs.readFile('List.json', 'utf-8', function(err, data) {
+                    if (err) throw err
+
+                    var jsonData = JSON.parse(data)
+					
+					var random = Math.floor(Math.random(0, jsonData.sharkfacts.length));
+					
+                    var tasknum = jsonData.tasks.length + 1;
+                    var taskdescription = message.substring(4, message.length);
+				
+			break;
         }
     }
 });
