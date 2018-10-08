@@ -154,17 +154,19 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                     message: '@everyone ' + '@' + user + ' made a push in: ' +  message.substring(4, message.length)
                 });
 			break;
-			case 'sharkfact':			
-                fs.readFile('List.json', 'utf-8', function(err, data) {
-                    if (err) throw err
+			case 'sharkfact':	
 
-                    var jsonData = JSON.parse(data)
-					
+			             var jsonData = '';
+				fs.readFile('List.json', 'utf-8', function(err, data) {
+                    if (err) throw err
+                    jsonData = JSON.parse(data)
 					var random = Math.floor(Math.random(0, jsonData.sharkfacts.length));
-					
-                    var tasknum = jsonData.tasks.length + 1;
-                    var taskdescription = message.substring(4, message.length);
-				
+
+                    bot.sendMessage({
+                        to: channelID,
+                        message: 'shark fact #' + json.sharkfacts[random].fact + ': ' + json.sharkfacts[i].text
+                    });
+                })					
 			break;
         }
     }
