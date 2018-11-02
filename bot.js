@@ -1,8 +1,16 @@
-var Discord = require('discord.io');
-var fs = require('fs')
-var logger = require('winston');
-var auth = require('./auth.json');
-var read = require('remove-function');
+//Inports
+const Discord = require('discord.io');
+const fs = require('fs')
+const logger = require('winston');
+const auth = require('./auth.json');
+const read = require('remove-function');
+const rp = require('request-promise');
+const url = 'http://api.openweathermap.org/data/2.5/weather?q=Huntsville&APPID=f9ae5c14dafb2c66e822c24256252421';
+
+
+//For Timer 
+var hasPlayed = false;
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
@@ -31,7 +39,8 @@ bot.on('message', function(user, userID, channelID, message, evt) {
             case 'help':
                 bot.sendMessage({
                     to: channelID,
-                    message: "Commands: !babyshark, !ping, !push <push alert>, !add <taskDescription>, !tasks, !delete <keyNum>, !alert <message to alert>, !pushed <what branch you pushed in>"
+                    message: "Commands: !babyshark, !ping, !push <push alert>, !add <taskDescription>, !tasks, !delete <keyNum>, " +
+                    " !alert <message to alert>, !pushed <what branch you pushed in>, !sharkfact, !date, !rip, !weather, !oof"
                 });
             break
             //baby shark meme 
@@ -118,15 +127,11 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                         if (jsonData.tasks[i].taskNum == message.substring(8, message.length)) {
                             jsonData.tasks.splice(i,1);
                             i++;                            
-                        }   
+                        }        
+                    }
 
-                        if (i < jsonData.tasks.length && i > 0) {      
-                            while (
-                                jsonData.tasks[i-1].taskNum != jsonData.tasks[i].taskNum - 1) {
-                                jsonData.tasks[i].taskNum--;
-                                //jsonData.tasks.splice(i+1,1);
-                            }      
-                        }       
+                    for (var i = jsonData.tasks.length - 1; i >= 0; i--) {
+                        jsonData.tasks[i].taskNum = i+1;
                     }
 
                     console.log(jsonData);
@@ -142,32 +147,142 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                         message.substring(8, message.length) + ' from the task list.'
                 });
                 break;
-			case 'alert':
-				bot.sendMessage({
+            case 'alert':
+                bot.sendMessage({
                     to: channelID,
-                    message: '@everyone ' + '@' + user + ' wanted to alert the channel: ' +  message.substring(4, message.length)
+                    message: '@everyone ' + '@' + user + ' wanted to alert the channel: ' +  message.substring(7, message.length)
                 });
-			break;
-			case 'pushed':
-								bot.sendMessage({
+            break;
+            case 'pushed':
+                bot.sendMessage({
                     to: channelID,
-                    message: '@everyone ' + '@' + user + ' made a push in: ' +  message.substring(4, message.length)
+                    message: '@everyone ' + '@' + user + ' made a push in: ' +  message.substring(8, message.length)
                 });
-			break;
-			case 'sharkfact':	
-
-			             var jsonData = '';
-				fs.readFile('List.json', 'utf-8', function(err, data) {
+            break;
+            case 'sharkfact':   
+                var jsonData = '';
+                fs.readFile('List.json', 'utf-8', function(err, data) {
                     if (err) throw err
                     jsonData = JSON.parse(data)
-					var random = Math.floor(Math.random(0, jsonData.sharkfacts.length-1));
-
-                    bot.sendMessage({
+                    var random = Math.floor(Math.random() * jsonData.sharkfacts.length);               
+                    bot.sendMessage({                      
                         to: channelID,
-                        message: 'shark fact #' + json.sharkfacts[random].fact + ': ' + json.sharkfacts[i].text
+                        message: 'shark fact #' + jsonData.sharkfacts[random].fact + ': ' + jsonData.sharkfacts[random].text
                     });
-                })					
-			break;
+                })                  
+            break;
+            case 'date':
+                var date = new Date();
+                var day = date.getDate();
+                var month = date.getMonth() + 1;
+                var year = date.getFullYear();
+                bot.sendMessage({                      
+                    to: channelID,
+                    message: 'Today\'s date is: ' + month + '/' + day + '/' + year
+                });              
+            break;
+            case 'rip':
+                bot.sendMessage({                      
+                    to: channelID,
+                    message: 'puts a flower on ' + user + '\'s grave.:wilted_rose::skull_crossbones:'
+                }); 
+            break;
+            case 'weather':
+
+                //Declare Varibales
+                var json;
+                var temp = -999;
+                var description = 'null';
+                var windSpeed = -999;
+
+                rp(url)
+                  .then(function(html){
+                    json = JSON.parse(html);
+                    temp = json.main.temp;
+                    temp = Math.floor((temp * 9/5) - 459.67);
+                    description = json.weather[0].description;
+                    windSpeed = json.wind.speed;
+
+                    //console.log(json);
+                        bot.sendMessage({                      
+                            to: channelID,
+                            message: 'weather report: ' + json.name + ',' + json.sys.country + '\rTempeture: ' + 
+                            temp + '\rDescription: ' + description + '\rWind: ' + windSpeed
+                        }); 
+                  })
+                  .catch(function(err){
+                    //handle error
+                    console.log('error report: ' + err);
+                });            
+            break;
+            case 'oof':
+                bot.sendMessage({                      
+                    to: channelID,
+                    message: 'Minecraft > Roblox.'
+                }); 
+            break;
+            case 'Mike':
+                var jsonData = '';
+                fs.readFile('List.json', 'utf-8', function(err, data) {
+                    if (err) throw err
+                    jsonData = JSON.parse(data)
+                    var random = Math.floor(Math.random() * jsonData.mike.length);               
+                    bot.sendMessage({                      
+                        to: channelID,
+                        message: jsonData.mike[random].value
+                    });
+                })    
+            break;
+            case 'alarm':
+                //alarm weather report
+                function checkUpdate() {
+                    //Declare Varibales
+                    var json;
+                    var temp = -999;
+                    var temp_min = 999;
+                    var temp_max = -999;
+                    var description = 'null';
+                    var windSpeed = -999;
+
+                    rp(url)
+                      .then(function(html){
+                        json = JSON.parse(html); //parse API JSON
+                        temp = Math.floor((json.main.temp * 9/5) - 459.67);
+                        temp_min = Math.floor((json.main.temp_min * 9/5) - 459.67);
+                        temp_max = Math.floor((json.main.temp_max * 9/5) - 459.67);
+                        description = json.weather[0].description;
+                        windSpeed = json.wind.speed;
+                           
+                        var date = new Date();   
+                        console.log(date.getHours());
+                        
+                        if (date.getHours() == 12 && !hasPlayed) {
+                            bot.sendMessage({                      
+                                to: channelID,
+                                message: 'Weather Report: ' + json.name + ',' + json.sys.country + '\rCurrent Tempeture: ' + 
+                                temp + '°F\rMin/Max Temp for Today: ' + temp_min + '°F/' + temp_max + '°F\rDescription: ' + description + '\rWind: ' + windSpeed
+                            }); 
+                            hasPlayed = true;    
+                            //Stop after it is played
+                            clearInterval(alarm);                       
+                        }                                 
+                    })         
+                    .catch(function(err){
+                        console.log('error report: ' + err);
+                    });      
+                }    
+                //Set on Repeat until it runs -> 900000 ~ 15 mins
+                var alarm = setInterval(checkUpdate, 900000);
+            break;
+            case 'git':
+                bot.sendMessage({                      
+                    to: channelID,
+                    message: "#/bin/C: \nGitGud.pl"
+                });
+            break;
         }
     }
 });
+
+
+
