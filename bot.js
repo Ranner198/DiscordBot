@@ -28,6 +28,11 @@ var smartMode = false;
 //Meme Folder
 var memeDirectory = './Memes/'
 
+//Global Variable
+var HourlyMemeGetRequest = false;
+var MemePoster;
+
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
@@ -293,9 +298,9 @@ bot.on('message', function(user, userID, channelID, message, evt) {
             case 'help':
                 bot.sendMessage({
                     to: channelID,
-                    message: "Commands: !babyshark, !ping, !push <push alert>, !add <taskDescription>, !tasks, !delete <keyNum>, " +
+                    message: "```CSS\nCommands: !babyshark, !ping, !push <push alert>, !add <taskDescription>, !tasks, !delete <keyNum>, " +
                     " !alert <message to alert>, !pushed <what branch you pushed in>, !sharkfact, !date, !rip, !weather, !weather <City Name>, !oof, !oof @<name>," +
-                    " !complete <num>, !completed, !smartMode, !smartMode <On/Off>, !meme"
+                    " !complete <num>, !completed, !smartMode, !smartMode <On/Off>, !meme, !HourlyMeme_<On/Off>, !HourlyMeme, !test, !introduction```"
                 });
             break
             //baby shark meme 
@@ -553,7 +558,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                         message: jsonData.mike[random].value
                     });
                 })    
-            break;
+            break; 
             case 'alarm':
                 //alarm weather report
                 function checkUpdate() {
@@ -594,23 +599,92 @@ bot.on('message', function(user, userID, channelID, message, evt) {
             case 'git':
                 bot.sendMessage({                      
                     to: channelID,
-                    message: "#/bin/C: \nGitGud.pl"
+                    message: "```CSS\n#/bin/C: \nGitGud.pl```"
                 });
             break;
             case 'wakemeup':
                 bot.sendMessage({                      
                     to: channelID,
-                    message: 'Wake me up inside!'
+                    message: '```CSS\nWake me up inside!```'
                 });
             break;
+            case 'test':
+                bot.sendMessage({
+                    to: channelID,
+                    message: "```CSS\nRannerBot v1.14 is running.... \nType in !help for listed commands.```"
+                });
+            break;
+            case 'introduction':
+            bot.sendMessage({
+                to: channelID,
+                message: "```CSS\nI am RannerBot v1.14\nI can run many commands to make things easier for you\nWant to try them out?\nType in !help for listed commands.```"
+            });
+            break;
+
+            //Turning on the memes
+            case 'HourlyMeme_On':
+            case 'HourlyMeme_on':
+            case 'HourlyMeme_ON':
+                
+                if (!HourlyMemeGetRequest) {
+                    HourlyMeme();
+                    HourlyMemeGetRequest = true;
+                    bot.sendMessage({
+                        to: channelID,
+                        message: "```CSS\nHourly meme posting is: On```"
+                    });
+                    MemePoster = setInterval(HourlyMeme, 3600000);  
+                }
+                else
+                {
+                    bot.sendMessage({
+                        to: channelID,
+                        message: "```CSS\nError, I am already running.....```"
+                    });
+                }
+
+                function HourlyMeme() {
+                    //Generate UTC Time
+                    var currTime = new Date();
+                    
+                    if (currTime.getUTCHours() < 1 && currTime.getUTCHours() > 13)
+                    {
+                        webscrape();
+                    }        
+                    if (!HourlyMemeGetRequest)
+                        clearInterval(MemePoster);
+                }
+            break;
+
+            //Turn off the hourly memes
+            case 'HourlyMeme_Off':
+            case 'HourlyMeme_off':
+            case 'HourlyMeme_OFF':
+                HourlyMemeGetRequest = false; 
+                bot.sendMessage({
+                    to: channelID,
+                    message: "```CSS\nHourly meme posting is: Off```"
+                });
+            break;
+            
+            case'HourlyMeme':
+                bot.sendMessage({
+                    to: channelID,
+                    message: '```CSS\n' + 'Hourly Meme Posting is: ' + HourlyMemeGetRequest + '```'
+                });
+            break;
+
+            //Webscraper
             case 'meme':
                 //Request URL webscrape
                 webscrape();
+
                 function webscrape() {
 
                     var URL = '';
                     
-                    if (message.length > 6)
+                    //For Custom Search
+                    if (message.length > 6 && message.includes('meme'))
                     {
                         if (message.includes('http')) {
                             URL = message.substring(6, message.length) + '/';
@@ -618,6 +692,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                             //The URL will be a redit post
                             URL = ReditURL + message.substring(6, message.length) + '/';
                         }
+                        
                         request(URL, function(err, resp, html) {
                             //If there is no error
                             if (!err){
@@ -638,8 +713,8 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                                 var randomNum = Math.floor(Math.random() * returnInfo.length);
 
                                 //Index 2 is a advertisment constistenly
-                                while (randomNum == 2)
-                                    randomNum = Math.floor(Math.random() * returnInfo.length);
+                                if (randomNum == 2 || randomNum == 0)
+                                randomNum++;
 
                                 //If the scrape returned something
                                 if (returnInfo.length > 0)   
@@ -647,19 +722,17 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                                     //Send to channel
                                     bot.sendMessage({                      
                                         to: channelID,                                  
-                                        embed:
-                                        {
-                                            thumbnail:
-                                            {
-                                                url: returnInfo[randomNum]
-                                            }
-                                        }
+                                        message: returnInfo[randomNum]                                            
                                     });
-                                } else 
-                                    console.log(err);                        
+                                } else        
+                                    bot.sendMessage({
+                                        to:channelID,
+                                        message: "```CSS\nThere was an error in the webscrape process\n Error: " + err + "\nIndex was: " + randomNum + "```"
+                                    });                
                                 }
                         });
-                    } else
+                    } 
+                        else //For Dank Memes Webscrape
                     {
                         request(DankMemesURL, function(err, resp, html) {
                         //If there is no error
@@ -681,8 +754,8 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                             var randomNum = Math.floor(Math.random() * returnInfo.length);
                             
                             //Index 2 is a advertisment constistenly
-                            while (randomNum == 2)
-                                    randomNum = Math.floor(Math.random() * returnInfo.length);
+                            if (randomNum == 2 || randomNum == 0)
+                                randomNum++;
                             
                             //If the scrape returned something
                             if (returnInfo.length > 0)   
@@ -690,16 +763,13 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                                 //Send to channel
                                 bot.sendMessage({                      
                                     to: channelID,                                  
-                                    embed:
-                                    {
-                                        thumbnail:
-                                        {
-                                            url: returnInfo[randomNum]
-                                        }
-                                    }
+                                    message: returnInfo[randomNum]    
                                 });
-                            } else //if there was an error debug it and log
-                                console.log(err);                        
+                            } else //if there was an error debug it and log 
+                                bot.sendMessage({
+                                    to:channelID,
+                                    message: "```CSS\nThere was an error in the webscrape process\n Error: " + err + "\nIndex was: " + randomNum + "```"
+                                });              
                             }
                         });
                     }
@@ -750,19 +820,93 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                 file: memeDirectory + 'StillLessPolys.jpg'
             });            
             break;
+            case 'timer':
+            case 'countdown':
+            case 'christmas':
+            case 'newyears':
+            case 'counter':
+                var timesOutput = [];
+                var currTime = GenerateTime(new Date());
+                const timeHolders = {
+                    'Christmas': {
+                        'days': 358,
+                        'hours': 23,
+                        'minutes': 59,
+                        'seconds': 59
+                    },
+                    'NewYearsDay': {
+                        'days': 365,
+                        'hours': 23,
+                        'minutes': 59,
+                        'seconds': 59
+                    },
+                };
+
+                timesOutput.push(DiffTime(currTime, timeHolders.Christmas));
+                timesOutput.push(DiffTime(currTime, timeHolders.NewYearsDay));
+                timesOutput.push(DiffTime(currTime, timeHolders.TGD));
+
+                function GenerateTime(date) {
+
+                    var seconds = date.getUTCSeconds();
+                    var minutes = date.getUTCMinutes();
+                    var hours = date.getUTCHours();
+                    var day = date.getUTCDate();
+                    var month = date.getUTCMonth();
+
+                    this.output = [0, 0, 0, 0];
+
+                    for (var i = month-1; i >= 0; i--) {
+                        if (i == 1)
+                            this.output[0] += 28			
+                        else {
+                            if (i % 2 == 0) {
+                                this.output[0] += 30; 
+                            } else
+                                this.output[0] += 31;
+                        } 
+                    }	
+
+                    this.output[0] += day;
+                    this.output[1] = hours;
+                    this.output[2] = minutes;
+                    this.output[3] = seconds;
+
+                    return output;
+                }
+                function DiffTime(currTime, timer) {
+                    
+                    var output = [];
+
+                    output.push(Math.abs(currTime[0] - timer.days));
+                    output.push(Math.abs(currTime[1] - timer.hours));
+                    output.push(Math.abs(currTime[2] - timer.minutes));
+                    output.push(Math.abs(currTime[3] - timer.seconds));
+
+                    for (var i = 0; i < output.length; i++) {
+                        if (output[i] < 10) {
+                            var temp = output[i];
+                            output[i] = '0' + temp;			
+                        }
+                    }
+
+                    return output;
+                }
+
+                bot.sendMessage({
+                    to: channelID,
+                    message: '\nChirstmas - ' + 'Days: ' + timesOutput[0][0] + ' Hours: ' + timesOutput[0][1] + 
+                    ' minutes: ' + timesOutput[0][2] + ' seconds: ' + timesOutput[0][3] + ' :christmas_tree:' +
+                    '\nNew Years Day - ' + 'Days: ' + timesOutput[1][0] + ' Hours: ' + timesOutput[1][1] + 
+                    ' minutes: ' + timesOutput[1][2] + ' seconds: ' + timesOutput[1][3] + ':confetti_ball:'
+                });
+                
+            break;
         }
     }
 });
 
-//These don't work for some reason????
-function GenerateRandom(max) {
-    var randomNum = Math.floor(Math.random() * max);
-    console.log(randomNum);
-    return randomNum;
+//EZ EP Lemon Squeeze Print function
+function Print(val) {
+    console.log(val);
 }
-function GenerateRandom(min, max) {
-    var randomNum = Math.floor(Math.random(min) * max);
-    return randomNum;
-}
-
-
